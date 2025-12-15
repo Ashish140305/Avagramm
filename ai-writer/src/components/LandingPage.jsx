@@ -125,7 +125,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* 7. PRICING TICKETS (New) */}
+      {/* 7. PRICING TICKETS (Fixed) */}
       <section id="pricing" className="pricing-section">
         <h2 style={{fontSize: '3rem', fontWeight: '900', marginBottom: '1rem'}}>
           Simple Pricing.
@@ -151,7 +151,7 @@ const LandingPage = () => {
 
           {/* Pro Card */}
           <div className="pricing-card pro">
-            <div style={{position: 'absolute', top: '-15px', right: '20px', background: 'var(--pop-yellow)', color: 'black', padding: '5px 15px', fontWeight: 'bold', borderRadius: '20px', transform: 'rotate(5deg)'}}>
+            <div style={{position: 'absolute', top: '-15px', right: '20px', background: 'var(--pop-lavender)', color: 'black', padding: '5px 15px', fontWeight: 'bold', borderRadius: '20px', transform: 'rotate(5deg)'}}>
               MOST POPULAR
             </div>
             <h3 style={{fontSize: '1.5rem', fontWeight: '800'}}>Pro Writer</h3>
@@ -162,7 +162,7 @@ const LandingPage = () => {
               <li>✨ Full Plagiarism Scan</li>
               <li>✨ Export to PDF/Docx</li>
             </ul>
-            <button className="btn-blob" style={{background: 'var(--pop-yellow)', color: 'black', width: '100%', marginTop: '2rem', boxSizing: 'border-box'}}>
+            <button className="btn-blob" style={{background: 'var(--pop-lavender)', color: 'black', width: '100%', marginTop: '2rem', boxSizing: 'border-box'}}>
               Go Pro
             </button>
           </div>
