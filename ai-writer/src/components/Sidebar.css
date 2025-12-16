@@ -1,0 +1,294 @@
+/* src/components/Sidebar.css */
+
+/* --- 1. RETRO PALETTE (The Secret Sauce) --- */
+:root {
+  --font-retro: 'Courier New', Courier, monospace;
+  
+  /* Vintage Ink Colors */
+  --ink-black: #18181b;
+  --ink-blue: #2563eb;       /* For Structure/New Docs */
+  --ink-red: #dc2626;        /* For Alerts/Delete */
+  --ink-green: #166534;      /* For Success/Money */
+  --ink-purple: #4f46e5;     /* For Actions */
+  
+  /* Paper Tints (Subtle Backgrounds) */
+  --paper-white: #ffffff;
+  --paper-cream: #fef9c3;    /* Active Document */
+  --paper-mint: #f0fdf4;     /* Ledger Boxes */
+  --paper-blue: #eff6ff;     /* Hover States */
+}
+
+/* --- SIDEBAR CONTAINER --- */
+.sidebar { 
+  display: flex; flex-direction: column; gap: 1.25rem; height: 100%; 
+  overflow-y: auto; padding-right: 8px; 
+  scrollbar-width: thin; scrollbar-color: var(--ink-black) transparent;
+}
+
+/* --- BASE PANEL (Paper Look) --- */
+.panel {
+  background: var(--paper-white);
+  border: 2px solid var(--ink-black);
+  border-radius: 4px;
+  box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+  color: var(--ink-black);
+  position: relative;
+  display: flex; flex-direction: column;
+  overflow: visible; 
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Dark Mode */
+body.dark-mode .panel {
+  background: #18181b; border-color: #52525b; color: #e4e4e7;
+  box-shadow: 4px 4px 0px rgba(255,255,255,0.1);
+}
+
+.panel:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0px rgba(0,0,0,0.15);
+}
+
+/* --- HEADERS (Consistent) --- */
+.sidebar-header h3, .panel > h3, .dict-header h3 {
+  margin: 0;
+  font-family: var(--font-retro);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #71717a; /* Pencil Grey */
+  border-bottom: 1px dashed rgba(0,0,0,0.2);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+/* =========================================
+   1. DOC MANAGER (Blue Ink & Cream Paper)
+   ========================================= */
+.doc-panel { padding: 1.2rem; }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+
+/* "Fresh Sheet" - Subtle Blue Ink */
+.fresh-sheet-btn {
+    width: 100%; padding: 10px; margin-bottom: 12px;
+    background: transparent;
+    border: 2px dashed var(--ink-blue); /* Blue Dashed */
+    border-radius: 4px;
+    color: var(--ink-blue);
+    font-family: var(--font-retro); font-weight: 800; font-size: 0.8rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s;
+}
+.fresh-sheet-btn:hover { background: var(--paper-blue); }
+
+.doc-list { display: flex; flex-direction: column; gap: 0; border-top: 1px solid rgba(0,0,0,0.1); }
+
+.doc-item { 
+    padding: 10px 8px; 
+    border-bottom: 1px dotted rgba(0,0,0,0.3);
+    cursor: pointer; font-family: var(--font-retro);
+    position: relative; transition: background 0.1s;
+}
+
+/* Active: Manila Folder Cream */
+.doc-item.active { 
+    background-color: var(--paper-cream); 
+    color: var(--ink-black);
+    border-bottom-style: solid; border-bottom-color: rgba(0,0,0,0.1);
+}
+/* Folder Tab Mark */
+.doc-item.active::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background-color: #eab308; /* Mustard Gold */
+}
+
+.doc-item:hover:not(.active) { background: rgba(0,0,0,0.03); }
+.doc-title { font-size: 0.9rem; font-weight: 700; }
+.doc-meta { font-size: 0.65rem; color: #6b7280; text-transform: uppercase; }
+
+/* Action Icons */
+.doc-actions { display: flex; gap: 4px; }
+.action-icon {
+    background: transparent; border: none; cursor: pointer;
+    padding: 4px; border-radius: 4px; color: #9ca3af; transition: all 0.2s;
+}
+.action-icon.edit:hover { color: var(--ink-blue); background: var(--paper-blue); }
+.action-icon.copy:hover { color: var(--ink-green); background: var(--paper-mint); }
+.action-icon.trash:hover { color: var(--ink-red); background: #fef2f2; }
+
+/* =========================================
+   2. QUALITY (Ink Stamp)
+   ========================================= */
+.score-panel { padding: 1.2rem; text-align: center; }
+.score-stamp-container { display: flex; justify-content: center; padding: 10px 0; }
+
+.score-stamp {
+    width: 80px; height: 80px;
+    border: 3px double currentColor;
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transform: rotate(-8deg);
+    opacity: 0.9;
+    /* Mix blend mode simulates ink on paper */
+    mix-blend-mode: multiply; 
+}
+body.dark-mode .score-stamp { mix-blend-mode: normal; }
+
+.score-value { font-family: var(--font-retro); font-size: 2rem; font-weight: 900; line-height: 1; }
+.score-label { font-family: sans-serif; font-size: 0.5rem; font-weight: 900; letter-spacing: 1px; }
+
+/* =========================================
+   3. ACTIONS (Typewriter Ribbons)
+   ========================================= */
+.action-panel { padding: 1.2rem; }
+
+.retro-btn {
+    width: 100%; padding: 12px;
+    font-family: var(--font-retro); font-weight: 700; font-size: 0.8rem; text-transform: uppercase;
+    background: #fff;
+    border: 1px solid var(--ink-black);
+    border-radius: 2px;
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.1s;
+}
+.retro-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px rgba(0,0,0,0.1); }
+
+/* Primary Action: Purple Ribbon Tint */
+.retro-btn.primary { 
+    color: var(--ink-purple); 
+    border-color: var(--ink-purple); 
+    background: #eef2ff; /* Very faint purple tint */
+}
+/* Secondary: Simple */
+.retro-btn.secondary { background: transparent; border-style: dashed; color: #52525b; }
+
+.no-issues-retro {
+    text-align: center; font-family: var(--font-retro); font-size: 0.8rem;
+    padding: 10px; border: 1px solid var(--ink-green);
+    background: var(--paper-mint); color: var(--ink-green);
+}
+
+/* =========================================
+   4. TONE (Retro Ruler)
+   ========================================= */
+.tone-panel { padding: 1.2rem; }
+.tone-stamp {
+    font-family: var(--font-retro); font-size: 1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
+    padding: 6px 14px;
+    border: 3px double; border-radius: 4px;
+    display: inline-block; margin-bottom: 16px; transform: rotate(-2deg);
+    background-color: rgba(255,255,255,0.5);
+}
+.spectrum-row { margin-bottom: 12px; }
+.spectrum-labels-retro {
+    display: flex; justify-content: space-between;
+    font-family: var(--font-retro); font-size: 0.6rem; font-weight: 700;
+    color: #71717a; margin-bottom: 2px;
+}
+.spectrum-ruler {
+    width: 100%; height: 8px; position: relative;
+    border-bottom: 1px solid rgba(0,0,0,0.3);
+    background: repeating-linear-gradient(to right, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 1px, transparent 1px, transparent 10%);
+}
+body.dark-mode .spectrum-ruler { border-color: rgba(255,255,255,0.3); background: repeating-linear-gradient(to right, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 1px, transparent 1px, transparent 10%); }
+.spectrum-pin {
+    width: 0; height: 0; 
+    border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid;
+    position: absolute; top: -2px; transform: translateX(-50%);
+    transition: left 0.5s ease;
+}
+
+/* =========================================
+   5. READABILITY (Mint Ledger Paper)
+   ========================================= */
+.read-panel { padding: 1.2rem; }
+.readability-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.ledger-box {
+    border: 1px solid #d1d5db; /* Light grey border */
+    padding: 8px; text-align: center;
+    background: var(--paper-mint); /* Mint tint background */
+    color: var(--ink-green); /* Dark Green Text */
+}
+body.dark-mode .ledger-box { background: #064e3b; border-color: #065f46; color: #a7f3d0; }
+
+.ledger-label {
+    font-family: var(--font-retro); font-size: 0.6rem; text-transform: uppercase;
+    border-bottom: 1px solid rgba(0,0,0,0.1); margin-bottom: 4px; padding-bottom: 2px;
+    opacity: 0.8;
+}
+.ledger-value { font-family: var(--font-retro); font-size: 1.4rem; font-weight: 700; }
+
+/* =========================================
+   6. DICTIONARY (Blue Label Tape)
+   ========================================= */
+.dict-panel { padding: 1.2rem; }
+
+/* Header Badge: Black Tape */
+.badge-retro {
+    background: var(--ink-black); color: #fff;
+    font-family: var(--font-retro); padding: 2px 6px; font-size: 0.7rem;
+}
+body.dark-mode .badge-retro { background: #fff; color: #000; }
+
+.dict-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+/* Words: Blue Label Tape */
+.label-chip {
+    background: #1e3a8a; /* Dark Blue Tape */
+    color: #fff;
+    font-family: var(--font-retro); font-size: 0.75rem;
+    padding: 4px 8px;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Lifted look */
+}
+body.dark-mode .label-chip { background: #3b82f6; }
+
+.label-chip button { color: #93c5fd; font-weight: 900; } /* Light blue X */
+.label-chip button:hover { color: #fff; }
+
+/* =========================================
+   7. DASHBOARD LINK
+   ========================================= */
+.dash-link {
+  margin-top: auto; 
+  background: var(--ink-black) !important; color: #fff !important; 
+  text-decoration: none; justify-content: center; align-items: center;
+  border: 2px solid var(--ink-black) !important;
+  cursor: pointer; padding: 1rem; font-family: var(--font-retro);
+}
+body.dark-mode .dash-link { background: #fff !important; color: #000 !important; }
+
+/* =========================================
+   COLLAPSED FIXES
+   ========================================= */
+.sidebar.slim .panel { width: 50px; height: 50px; padding: 0; align-items: center; justify-content: center; }
+.sidebar.slim .sidebar-header, 
+.sidebar.slim .doc-list-wrapper, 
+.sidebar.slim .score-stamp-container,
+.sidebar.slim .tone-stamp,
+.sidebar.slim .spectrum-row,
+.sidebar.slim .readability-grid,
+.sidebar.slim .action-content,
+.sidebar.slim .dict-header,
+.sidebar.slim .dict-content,
+.sidebar.slim .dash-content,
+.sidebar.slim .fresh-sheet-btn, /* Hide the big button */
+.sidebar.slim h3 { display: none !important; }
+
+.collapsed-icon { display: none; }
+.sidebar.slim .collapsed-icon { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; }
+
+/* Collapsed Tooltip */
+.sidebar.slim .panel:hover::after {
+    content: attr(data-tooltip);
+    position: fixed; left: 85px; 
+    background: var(--ink-black); color: #fff;
+    padding: 6px 12px; font-family: var(--font-retro); font-size: 0.8rem;
+    z-index: 9999; pointer-events: none;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+}
+body.dark-mode .sidebar.slim .panel:hover::after { background: #fff; color: #000; }
