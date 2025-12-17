@@ -1,0 +1,96 @@
+/* src/components/SuggestionCard.css */
+:root {
+  --retro-font: 'Courier New', Courier, monospace;
+}
+
+/* 1. The Card Container (Sticky Note Style) */
+.suggestion-card {
+  background-color: #fefce8; /* Pale Cream Yellow */
+  border: 2px solid #18181b; /* Ink Black Border */
+  border-radius: 2px; /* Sharp corners */
+  padding: 16px;
+  width: 320px;
+  font-family: var(--retro-font);
+  box-shadow: 6px 6px 0px rgba(0,0,0,0.2); /* Hard Shadow */
+  z-index: 1000;
+  position: absolute; /* Essential for positioning */
+}
+
+/* 2. Header Row */
+.card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed #d1d5db; /* Perforation line */
+  padding-bottom: 8px;
+}
+.issue-type {
+  font-weight: 900; 
+  text-transform: uppercase; 
+  letter-spacing: 1px;
+  font-size: 0.75rem;
+  color: #71717a;
+}
+.btn-close {
+  background: transparent; border: 1px solid transparent; 
+  font-size: 1.2rem; cursor: pointer; line-height: 1;
+  color: #71717a;
+}
+.btn-close:hover { color: #dc2626; border-color: #dc2626; }
+
+/* 3. The Content (Red Pen Correction) */
+.original-text {
+  text-decoration: line-through;
+  text-decoration-color: #dc2626; /* Red line through */
+  text-decoration-thickness: 2px;
+  color: #9ca3af;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.suggestion-fix {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #166534; /* Green Ink */
+  cursor: pointer;
+  background: rgba(0,0,0,0.03);
+  padding: 4px 8px;
+  border-left: 3px solid #166534; /* Green margin line */
+  margin-bottom: 12px;
+}
+.suggestion-fix:hover { background: #dcfce7; }
+
+/* 4. Synonyms (Label Tape) */
+.synonym-row {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.synonym-label { font-size: 0.7rem; font-weight: bold; color: #6b7280; }
+.synonym-chip {
+  background: #fff;
+  border: 1px solid #000;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+  font-family: var(--retro-font);
+}
+.synonym-chip:hover { transform: translate(1px, 1px); box-shadow: none; }
+
+/* 5. Footer Actions */
+.card-actions {
+  display: flex; gap: 8px; margin-top: 16px;
+}
+.btn-accept-fix {
+  flex: 1;
+  background: #18181b; color: #fff;
+  font-family: var(--retro-font); font-weight: 700; text-transform: uppercase;
+  border: 2px solid #18181b;
+  padding: 8px;
+  cursor: pointer;
+}
+.btn-accept-fix:hover { background: #fff; color: #000; }
+
+.btn-dict {
+  background: #fff; border: 2px solid #18181b;
+  padding: 0 12px; cursor: pointer; font-size: 1.2rem;
+}
+.btn-dict:hover { background: #eff6ff; }

@@ -1,44 +1,33 @@
+// src/components/SuggestionCard.jsx
 import React, { useRef, useLayoutEffect, useState } from 'react';
+import './SuggestionCard.css'; // Make sure to import the CSS
 
 const SuggestionCard = ({ issue, onAccept, onDismiss, onAddToDict, position }) => {
   const cardRef = useRef(null);
   const [adjustedStyle, setAdjustedStyle] = useState({ 
     top: position.top, 
     left: position.left,
-    opacity: 0 
+    opacity: 0,
+    zIndex: 1000 
   });
 
   useLayoutEffect(() => {
     if (cardRef.current && cardRef.current.offsetParent) {
         const card = cardRef.current;
-        const parent = card.offsetParent; // The editor wrapper
+        const parent = card.offsetParent; 
         const cardRect = card.getBoundingClientRect();
         const parentRect = parent.getBoundingClientRect();
         
         let newLeft = position.left;
         let newTop = position.top;
         
-        // 1. Horizontal Safety (Prevent cutting off right side)
-        if (newLeft + cardRect.width > parentRect.width) {
-            newLeft = parentRect.width - cardRect.width - 20; // 20px padding from right
-        }
+        // Safety bounds
+        if (newLeft + cardRect.width > parentRect.width) newLeft = parentRect.width - cardRect.width - 20;
         if (newLeft < 10) newLeft = 10;
-
-        // 2. Vertical Safety (Prevent cutting off bottom)
-        // Check if top position + card height > parent height
-        // position.top is usually (rect.bottom - parentRect.top + 10)
-        
-        // We calculate if the card fits below the error
         const fitsBelow = (newTop + cardRect.height) < parentRect.height;
-        
-        if (!fitsBelow) {
-            // Flip UP: Position it above the error line
-            // We need to estimate the error height (approx 24px line height)
-            // Move up by Card Height + Error Line Height + buffer
-            newTop = newTop - cardRect.height - 40; 
-        }
+        if (!fitsBelow) newTop = newTop - cardRect.height - 40; 
 
-        setAdjustedStyle({ top: newTop, left: newLeft, opacity: 1 });
+        setAdjustedStyle({ top: newTop, left: newLeft, opacity: 1, zIndex: 1000 });
     }
   }, [position]);
 
@@ -46,39 +35,43 @@ const SuggestionCard = ({ issue, onAccept, onDismiss, onAddToDict, position }) =
     <div 
       className="suggestion-card"
       ref={cardRef}
-      style={{ 
-          top: adjustedStyle.top, 
-          left: adjustedStyle.left,
-          opacity: adjustedStyle.opacity,
-          transition: 'opacity 0.1s ease, top 0.2s ease, left 0.2s ease'
-      }}
+      style={{ top: adjustedStyle.top, left: adjustedStyle.left, opacity: adjustedStyle.opacity }}
     >
-      <div style={{display:'flex', justifyContent:'space-between', marginBottom:'8px'}}>
-        <span style={{fontSize:'12px', fontWeight:'bold', color:'var(--text-muted)', textTransform:'uppercase'}}>{issue.type}</span>
-        <button onClick={onDismiss} style={{border:'none', background:'none', cursor:'pointer', fontSize:'16px', color:'#999'}}>×</button>
+      {/* HEADER */}
+      <div className="card-header">
+        <span className="issue-type">{issue.type} ERROR</span>
+        <button className="btn-close" onClick={onDismiss}>×</button>
       </div>
       
-      <div style={{marginBottom:'4px', color: 'var(--pop-coral)', textDecoration: 'line-through'}}>{issue.original}</div>
-      <div className="suggestion-fix" onClick={() => onAccept(issue.suggestion)}>{issue.suggestion}</div>
+      {/* CONTENT */}
+      <div className="original-text">{issue.original}</div>
+      <div className="suggestion-fix" onClick={() => onAccept(issue.suggestion)}>
+        {issue.suggestion}
+      </div>
 
+      {/* SYNONYMS */}
       {issue.type === 'vocabulary' && (
-        <div style={{display: 'flex', gap: '5px', flexWrap: 'wrap', marginBottom: '8px'}}>
-          <span style={{fontSize:'11px', color:'var(--text-muted)'}}>Or:</span>
+        <div className="synonym-row">
+          <span className="synonym-label">TRY:</span>
           {['sublime', 'superb', 'stellar'].map(syn => (
-             <span key={syn} onClick={() => onAccept(syn)} style={{fontSize:'11px', background:'#f3f4f6', padding:'2px 6px', borderRadius:'4px', cursor:'pointer'}}>{syn}</span>
+             <button key={syn} className="synonym-chip" onClick={() => onAccept(syn)}>
+               {syn}
+             </button>
           ))}
         </div>
       )}
 
-      <p style={{fontSize: '13px', color: '#666', margin: '8px 0'}}>{issue.reason}</p>
+      {/* REASON */}
+      <p style={{fontSize: '0.8rem', color: '#52525b', fontStyle:'italic', margin: '0'}}>
+        Note: {issue.reason}
+      </p>
 
-      <div className="suggestion-actions" style={{display:'flex', gap:'8px'}}>
-        <button className="btn-accept" onClick={() => onAccept(issue.suggestion)}>Accept Fix</button>
-        <button 
-            onClick={() => onAddToDict(issue.original)}
-            title="Add to Dictionary"
-            style={{background:'transparent', border:'2px solid #eee', borderRadius:'8px', cursor:'pointer', padding:'0 10px'}}
-        >
+      {/* ACTIONS */}
+      <div className="card-actions">
+        <button className="btn-accept-fix" onClick={() => onAccept(issue.suggestion)}>
+            ✓ APPLY FIX
+        </button>
+        <button className="btn-dict" onClick={() => onAddToDict(issue.original)} title="Add to Dictionary">
             📖
         </button>
       </div>

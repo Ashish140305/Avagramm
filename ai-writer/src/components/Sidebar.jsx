@@ -1,8 +1,10 @@
 // src/components/Sidebar.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import StatsModal from './StatsModal';
 import './Sidebar.css';
 
+// ... (KEEP ALL ICONS AND HELPER FUNCTIONS SAME AS BEFORE) ...
 // --- ICONS ---
 const Icons = {
   Wand: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2l3 3-3 3"></path><path d="M15 5l-8 8"></path><path d="M9 13l-6 6"></path></svg>,
@@ -16,7 +18,8 @@ const Icons = {
   Copy: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>,
   Stats: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>,
   Pen: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>,
-  Star: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+  Star: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>,
+  Warning: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
 };
 
 const timeAgo = (dateString) => {
@@ -51,17 +54,19 @@ const Sidebar = ({
   analysis, onFixAll, onAutoFormat, dictionary, onRemoveFromDict, collapsed 
 }) => {
   const [showDict, setShowDict] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const [editingDocId, setEditingDocId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
+  const [docToDelete, setDocToDelete] = useState(null); // DELETE STATE
   const inputRef = useRef(null);
 
   const getToneColor = (tone) => {
       const t = (tone || 'neutral').toLowerCase();
-      if (t.includes('excited') || t.includes('happy')) return '#d97706'; 
-      if (t.includes('professional') || t.includes('formal')) return '#4f46e5'; 
-      if (t.includes('friendly') || t.includes('casual')) return '#059669'; 
-      if (t.includes('concerned') || t.includes('urgent')) return '#dc2626'; 
-      return '#52525b'; 
+      if (t.includes('excited') || t.includes('happy')) return 'var(--pop-yellow)';
+      if (t.includes('professional') || t.includes('formal')) return 'var(--pop-violet)';
+      if (t.includes('friendly') || t.includes('casual')) return 'var(--pop-mint)';
+      if (t.includes('concerned') || t.includes('urgent')) return 'var(--pop-coral)';
+      return 'var(--text-muted)';
   };
   
   const currentTone = analysis.tone || 'Neutral';
@@ -77,27 +82,43 @@ const Sidebar = ({
   const handleKeyDown = (e) => { if (e.key === 'Enter') saveTitle(); if (e.key === 'Escape') setEditingDocId(null); };
 
   const getScoreColor = (score) => {
-      if(score >= 90) return '#059669'; 
-      if(score >= 70) return '#d97706'; 
-      return '#dc2626'; 
+      if(score >= 90) return 'var(--pop-mint)'; 
+      if(score >= 70) return 'var(--pop-yellow)'; 
+      return 'var(--pop-coral)'; 
+  };
+
+  // --- DELETE LOGIC (FIXED) ---
+  const requestDelete = (doc, e) => {
+      e.stopPropagation();
+      setDocToDelete(doc);
+  };
+  
+  const confirmDelete = (e) => {
+      if(e) e.stopPropagation();
+      if (docToDelete) {
+          // PASS A DUMMY EVENT to prevent crashes if parent expects 'e'
+          onDeleteDoc(docToDelete.id, { stopPropagation: () => {} });
+          setDocToDelete(null);
+      }
+  };
+
+  const cancelDelete = (e) => {
+      if(e) e.stopPropagation();
+      setDocToDelete(null);
   };
 
   return (
     <aside className={`sidebar ${collapsed ? 'slim' : ''}`}>
       
-      {/* 1. DOCUMENT MANAGER (COLORED) */}
-      <div className="panel doc-panel" data-tooltip="My Documents">
+      {/* 1. DOCUMENT MANAGER */}
+      <div className="panel doc-panel" title="My Documents">
          <div className="sidebar-header">
              <h3>DOCUMENTS</h3>
-             {/* Small + removed, creating space for the big button */}
          </div>
-         
-         {/* THE NEW "FRESH SHEET" BUTTON */}
          <button className="fresh-sheet-btn" onClick={onNewDoc}>
             <Icons.Plus />
             <span>FRESH SHEET</span>
          </button>
-
          <div className="doc-list-wrapper">
              <div className="doc-list">
                  {documents.map(doc => (
@@ -111,9 +132,10 @@ const Sidebar = ({
                                      <span className="doc-meta">{timeAgo(doc.date)}</span>
                                  </div>
                                  <div className="doc-actions">
-                                     <button className="action-icon edit" onClick={(e) => startEditing(doc, e)} data-tooltip="Rename"><Icons.Edit /></button>
-                                     <button className="action-icon copy" onClick={(e) => onDuplicateDoc(doc.id, e)} data-tooltip="Duplicate"><Icons.Copy /></button>
-                                     <button className="action-icon trash" onClick={(e) => onDeleteDoc(doc.id, e)} data-tooltip="Delete"><Icons.Trash /></button>
+                                     <button className="action-icon edit" onClick={(e) => startEditing(doc, e)} title="Rename"><Icons.Edit /></button>
+                                     <button className="action-icon copy" onClick={(e) => onDuplicateDoc(doc.id, e)} title="Duplicate"><Icons.Copy /></button>
+                                     {/* DELETE TRIGGER */}
+                                     <button className="action-icon trash" onClick={(e) => requestDelete(doc, e)} title="Delete"><Icons.Trash /></button>
                                  </div>
                              </div>
                          )}
@@ -121,13 +143,11 @@ const Sidebar = ({
                  ))}
              </div>
          </div>
-         <div className="collapsed-icon" onClick={onNewDoc} data-tooltip="Create New Draft" style={{cursor: 'pointer'}}>
-            <Icons.Folder />
-         </div>
+         <div className="collapsed-icon" onClick={onNewDoc} style={{cursor:'pointer'}}><Icons.Folder /></div>
       </div>
 
-      {/* 2. SCORE PANEL */}
-      <div className="panel score-panel" data-tooltip={`Quality Score: ${analysis.score}`}>
+      {/* 2. QUALITY SCORE */}
+      <div className="panel score-panel" title={`Quality Score: ${analysis.score}`}>
         <h3>QUALITY</h3>
         <div className="score-stamp-container">
             <div 
@@ -138,13 +158,17 @@ const Sidebar = ({
                 <div className="score-label">GRADE</div>
             </div>
         </div>
-        <div className="collapsed-icon" style={{color: getScoreColor(analysis.score)}}>
-            <Icons.Star />
+        <div className="collapsed-icon score-number" style={{color: getScoreColor(analysis.score)}}>
+            {analysis.score}
         </div>
       </div>
 
-      {/* 3. QUICK ACTIONS */}
-      <div className="panel action-panel" data-tooltip="Quick Actions">
+      {/* 3. ACTIONS */}
+      <div 
+        className="panel action-panel" 
+        title="Quick Actions"
+        onClick={() => collapsed && onFixAll()}
+      >
          <h3>ACTIONS</h3>
          <div className="action-content" style={{display:'flex', flexDirection:'column', gap:'12px'}}>
              {analysis.issues.length > 0 ? (
@@ -160,13 +184,13 @@ const Sidebar = ({
                 <Icons.Pen /> <span>FORMAT TEXT</span>
              </button>
          </div>
-         <div className="collapsed-icon" style={{color: '#4f46e5', cursor: 'pointer'}} onClick={onFixAll} data-tooltip="Fix All Issues">
+         <div className="collapsed-icon" style={{color: 'var(--pop-violet)', cursor: 'pointer'}}>
              <Icons.Wand />
          </div>
       </div>
 
       {/* 4. TONE PANEL */}
-      <div className="panel tone-panel" data-tooltip={`Tone: ${analysis.tone}`}>
+      <div className="panel tone-panel" title={`Tone: ${analysis.tone}`}>
         <h3>TONE</h3>
         <div className="tone-content">
             <div className="tone-stamp" style={{ color: toneColor, borderColor: toneColor }}>
@@ -197,7 +221,7 @@ const Sidebar = ({
       </div>
 
       {/* 5. READABILITY */}
-      <div className="panel read-panel" data-tooltip={`Readability: Grade ${analysis.readability?.grade}`}>
+      <div className="panel read-panel" title={`Readability: Grade ${analysis.readability?.grade}`}>
         <h3>READABILITY</h3>
         <div className="readability-grid">
             <div className="ledger-box">
@@ -213,7 +237,12 @@ const Sidebar = ({
       </div>
 
       {/* 6. DICTIONARY */}
-      <div className="panel dict-panel" data-tooltip="Dictionary" onClick={() => setShowDict(!showDict)} style={{cursor:'pointer'}}>
+      <div 
+        className="panel dict-panel" 
+        title="Dictionary" 
+        onClick={() => setShowDict(!showDict)} 
+        style={{cursor:'pointer'}}
+      >
          <div className="dict-header">
              <h3>DICTIONARY</h3>
              <span className="badge-retro">{dictionary.length}</span>
@@ -235,13 +264,32 @@ const Sidebar = ({
       </div>
 
       {/* 7. DASHBOARD LINK */}
-      <Link to="/dashboard" className="panel dash-link" data-tooltip="Stats Dashboard">
+      <div className="panel dash-link" title="View Report" onClick={() => setShowStats(true)}>
          <div className="dash-content">
              <Icons.Stats />
              <span>Stats</span>
          </div>
          <div className="collapsed-icon"><Icons.Stats /></div>
-      </Link>
+      </div>
+      
+      {/* --- CONFIRM DELETE ALERT (RETRO) --- */}
+      {docToDelete && (
+          <div className="delete-overlay" onClick={cancelDelete}>
+              <div className="delete-modal-retro" onClick={(e) => e.stopPropagation()}>
+                  <div className="delete-header">
+                      <Icons.Warning />
+                      <span>CONFIRM DELETION</span>
+                  </div>
+                  <p>Permanently shred "<strong>{docToDelete.title}</strong>"?</p>
+                  <div className="delete-actions">
+                      <button className="retro-btn secondary" onClick={cancelDelete}>CANCEL</button>
+                      <button className="retro-btn primary delete-confirm-btn" onClick={confirmDelete}>SHRED IT</button>
+                  </div>
+              </div>
+          </div>
+      )}
+
+      <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
 
     </aside>
   );

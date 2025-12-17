@@ -1,271 +1,367 @@
 /* src/components/Sidebar.css */
 
-/* --- 1. RETRO PALETTE (The Secret Sauce) --- */
 :root {
   --font-retro: 'Courier New', Courier, monospace;
   
-  /* Vintage Ink Colors */
+  /* COMIC / RETRO VARS */
   --ink-black: #18181b;
-  --ink-blue: #2563eb;       /* For Structure/New Docs */
-  --ink-red: #dc2626;        /* For Alerts/Delete */
-  --ink-green: #166534;      /* For Success/Money */
-  --ink-purple: #4f46e5;     /* For Actions */
+  --pop-violet: #8b5cf6;
+  --pop-mint: #34d399;
+  --pop-yellow: #facc15;
+  --pop-coral: #f87171;
+  --text-muted: #71717a;
   
-  /* Paper Tints (Subtle Backgrounds) */
-  --paper-white: #ffffff;
-  --paper-cream: #fef9c3;    /* Active Document */
-  --paper-mint: #f0fdf4;     /* Ledger Boxes */
-  --paper-blue: #eff6ff;     /* Hover States */
+  /* Light Mode Base */
+  --panel-bg-solid: #ffffff;
+  --paper-cream: #fef9c3;
+}
+
+/* DARK MODE VARS */
+body.dark-mode {
+  --ink-black: #ffffff; 
+  --panel-bg-solid: #09090b; 
+  --text-muted: #a1a1aa;
 }
 
 /* --- SIDEBAR CONTAINER --- */
 .sidebar { 
-  display: flex; flex-direction: column; gap: 1.25rem; height: 100%; 
-  overflow-y: auto; padding-right: 8px; 
-  scrollbar-width: thin; scrollbar-color: var(--ink-black) transparent;
+  display: flex; 
+  flex-direction: column; 
+  gap: 1.25rem; 
+  height: 100%; 
+  overflow-y: auto; 
+  overflow-x: hidden; 
+  padding-right: 8px; 
+  scrollbar-width: thin; 
+  scrollbar-color: var(--ink-black) transparent;
+
+  /* --- SMOOTH TRANSITION --- */
+  width: 280px; 
+  transition: width 0.3s ease; 
+  flex-shrink: 0;
 }
 
-/* --- BASE PANEL (Paper Look) --- */
+/* --- BASE PANEL --- */
 .panel {
-  background: var(--paper-white);
-  border: 2px solid var(--ink-black);
-  border-radius: 4px;
-  box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+  background: var(--panel-bg-solid);
+  border: 3px solid var(--ink-black);
+  border-radius: 12px;
+  box-shadow: 5px 5px 0px rgba(0,0,0,0.15);
   color: var(--ink-black);
   position: relative;
   display: flex; flex-direction: column;
   overflow: visible; 
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  
+  /* SYNCHRONIZED TRANSITIONS */
+  transition: 
+    box-shadow 0.2s ease, 
+    border-color 0.2s ease,
+    width 0.3s ease,           
+    height 0.3s ease,          
+    padding 0.3s ease;         
 }
 
-/* Dark Mode */
+/* DARK MODE: High Contrast Noir */
 body.dark-mode .panel {
-  background: #18181b; border-color: #52525b; color: #e4e4e7;
-  box-shadow: 4px 4px 0px rgba(255,255,255,0.1);
+  background: #18181b;
+  border-color: #52525b; 
+  color: #fff;
+  box-shadow: 5px 5px 0px rgba(255,255,255,0.1); 
 }
 
+/* HOVER */
 .panel:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 6px 6px 0px rgba(0,0,0,0.15);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.3); 
+  border-color: var(--pop-violet);
+}
+body.dark-mode .panel:hover {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+  border-color: #fff;
 }
 
-/* --- HEADERS (Consistent) --- */
+/* --- HEADERS --- */
 .sidebar-header h3, .panel > h3, .dict-header h3 {
-  margin: 0;
-  font-family: var(--font-retro);
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #71717a; /* Pencil Grey */
-  border-bottom: 1px dashed rgba(0,0,0,0.2);
-  padding-bottom: 8px;
-  margin-bottom: 12px;
+  margin: 0; font-family: var(--font-retro);
+  font-size: 0.8rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text-muted);
+  border-bottom: 2px solid rgba(0,0,0,0.1);
+  padding-bottom: 8px; margin-bottom: 12px;
+  
+  white-space: nowrap; 
+  overflow: hidden;
+  transition: opacity 0.2s ease;
 }
+body.dark-mode .sidebar-header h3, 
+body.dark-mode .panel > h3 { border-color: #3f3f46; color: #a1a1aa; }
 
 /* =========================================
-   1. DOC MANAGER (Blue Ink & Cream Paper)
+   DELETE ALERT OVERLAY
+   ========================================= */
+.delete-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5); z-index: 5000;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.delete-modal-retro {
+    background: #fff;
+    border: 4px solid var(--ink-black);
+    padding: 24px; width: 300px;
+    border-radius: 12px;
+    box-shadow: 10px 10px 0px rgba(0,0,0,0.2);
+    text-align: center;
+    font-family: var(--font-retro);
+}
+body.dark-mode .delete-modal-retro { background: #18181b; border-color: #fff; box-shadow: 10px 10px 0px #000; }
+
+.delete-header { 
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    color: var(--pop-coral); font-weight: 900; font-size: 1.2rem; margin-bottom: 16px;
+}
+.delete-actions { display: flex; gap: 12px; margin-top: 20px; }
+.delete-confirm-btn { background: #fee2e2 !important; border-color: #ef4444 !important; color: #b91c1c !important; }
+body.dark-mode .delete-confirm-btn { background: #7f1d1d !important; color: #fca5a5 !important; border-color: #f87171 !important; }
+
+/* =========================================
+   1. DOC MANAGER
    ========================================= */
 .doc-panel { padding: 1.2rem; }
 .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
 
-/* "Fresh Sheet" - Subtle Blue Ink */
+.icon-btn-round { 
+  background: var(--ink-black); color: var(--panel-bg-solid); 
+  border: none; border-radius: 50%; width: 24px; height: 24px; 
+  cursor: pointer; display: flex; align-items: center; justify-content: center; 
+}
+body.dark-mode .icon-btn-round { background: #fff; color: #000; }
+
 .fresh-sheet-btn {
     width: 100%; padding: 10px; margin-bottom: 12px;
     background: transparent;
-    border: 2px dashed var(--ink-blue); /* Blue Dashed */
-    border-radius: 4px;
-    color: var(--ink-blue);
+    border: 3px dashed var(--pop-violet);
+    border-radius: 8px;
+    color: var(--pop-violet);
     font-family: var(--font-retro); font-weight: 800; font-size: 0.8rem;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
     transition: all 0.2s;
+    white-space: nowrap; overflow: hidden;
 }
-.fresh-sheet-btn:hover { background: var(--paper-blue); }
+.fresh-sheet-btn:hover { background: rgba(139, 92, 246, 0.1); }
+body.dark-mode .fresh-sheet-btn { border-color: #a78bfa; color: #a78bfa; }
 
-.doc-list { display: flex; flex-direction: column; gap: 0; border-top: 1px solid rgba(0,0,0,0.1); }
+.doc-list { display: flex; flex-direction: column; gap: 0; border-top: 2px solid rgba(0,0,0,0.1); }
+body.dark-mode .doc-list { border-color: #52525b; }
 
 .doc-item { 
-    padding: 10px 8px; 
-    border-bottom: 1px dotted rgba(0,0,0,0.3);
+    padding: 10px 8px; border-bottom: 2px dotted rgba(0,0,0,0.2); 
     cursor: pointer; font-family: var(--font-retro);
     position: relative; transition: background 0.1s;
+    white-space: nowrap; overflow: hidden;
 }
+body.dark-mode .doc-item { border-color: #3f3f46; color: #d4d4d8; }
 
-/* Active: Manila Folder Cream */
+/* ACTIVE DOC */
 .doc-item.active { 
-    background-color: var(--paper-cream); 
-    color: var(--ink-black);
-    border-bottom-style: solid; border-bottom-color: rgba(0,0,0,0.1);
+    background-color: var(--paper-cream); /* Yellow */
+    color: #000; /* Black Text */
+    border-bottom-style: solid;
+    border-left: 4px solid #eab308;
 }
-/* Folder Tab Mark */
-.doc-item.active::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-    background-color: #eab308; /* Mustard Gold */
+body.dark-mode .doc-item.active { 
+    background-color: #fef9c3; /* Yellow */
+    color: #000; /* Black Text */
+    border-left-color: #eab308;
+    border-bottom-color: transparent;
 }
 
 .doc-item:hover:not(.active) { background: rgba(0,0,0,0.03); }
-.doc-title { font-size: 0.9rem; font-weight: 700; }
-.doc-meta { font-size: 0.65rem; color: #6b7280; text-transform: uppercase; }
+body.dark-mode .doc-item:hover:not(.active) { background: rgba(255,255,255,0.05); }
 
-/* Action Icons */
+.doc-title { font-size: 0.9rem; font-weight: 700; }
+.doc-meta { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+body.dark-mode .doc-item.active .doc-meta { color: #4b5563; }
+
 .doc-actions { display: flex; gap: 4px; }
 .action-icon {
     background: transparent; border: none; cursor: pointer;
-    padding: 4px; border-radius: 4px; color: #9ca3af; transition: all 0.2s;
+    padding: 4px; border-radius: 4px; color: var(--text-muted); transition: all 0.2s;
 }
-.action-icon.edit:hover { color: var(--ink-blue); background: var(--paper-blue); }
-.action-icon.copy:hover { color: var(--ink-green); background: var(--paper-mint); }
-.action-icon.trash:hover { color: var(--ink-red); background: #fef2f2; }
+.action-icon:hover { color: var(--ink-black); background: rgba(0,0,0,0.1); }
+body.dark-mode .doc-item.active .action-icon { color: #4b5563; }
+body.dark-mode .doc-item.active .action-icon:hover { color: #000; background: rgba(0,0,0,0.1); }
 
 /* =========================================
-   2. QUALITY (Ink Stamp)
+   2. QUALITY
    ========================================= */
 .score-panel { padding: 1.2rem; text-align: center; }
 .score-stamp-container { display: flex; justify-content: center; padding: 10px 0; }
 
 .score-stamp {
     width: 80px; height: 80px;
-    border: 3px double currentColor;
+    border: 4px solid currentColor;
     border-radius: 50%;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    transform: rotate(-8deg);
-    opacity: 0.9;
-    /* Mix blend mode simulates ink on paper */
-    mix-blend-mode: multiply; 
+    opacity: 1;
 }
-body.dark-mode .score-stamp { mix-blend-mode: normal; }
+body.dark-mode .score-stamp { box-shadow: 0 0 10px currentColor; }
 
 .score-value { font-family: var(--font-retro); font-size: 2rem; font-weight: 900; line-height: 1; }
 .score-label { font-family: sans-serif; font-size: 0.5rem; font-weight: 900; letter-spacing: 1px; }
 
+.score-number { font-family: var(--font-retro); font-weight: 900; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+
 /* =========================================
-   3. ACTIONS (Typewriter Ribbons)
+   3. ACTIONS
    ========================================= */
 .action-panel { padding: 1.2rem; }
 
 .retro-btn {
     width: 100%; padding: 12px;
-    font-family: var(--font-retro); font-weight: 700; font-size: 0.8rem; text-transform: uppercase;
-    background: #fff;
-    border: 1px solid var(--ink-black);
-    border-radius: 2px;
+    font-family: var(--font-retro); font-weight: 800; font-size: 0.8rem; text-transform: uppercase;
+    background: var(--panel-bg-solid);
+    border: 3px solid var(--ink-black);
+    border-radius: 8px;
     box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
     transition: all 0.1s;
+    white-space: nowrap; overflow: hidden;
 }
+body.dark-mode .retro-btn { background: #27272a; border-color: #52525b; color: #fff; box-shadow: 3px 3px 0px #000; }
+
+.retro-btn:hover { box-shadow: 5px 5px 0px rgba(0,0,0,0.15); transform: translateY(-1px); }
 .retro-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px rgba(0,0,0,0.1); }
 
-/* Primary Action: Purple Ribbon Tint */
-.retro-btn.primary { 
-    color: var(--ink-purple); 
-    border-color: var(--ink-purple); 
-    background: #eef2ff; /* Very faint purple tint */
-}
-/* Secondary: Simple */
-.retro-btn.secondary { background: transparent; border-style: dashed; color: #52525b; }
+.retro-btn.primary { color: var(--pop-violet); border-color: var(--pop-violet); background: rgba(139, 92, 246, 0.05); }
+body.dark-mode .retro-btn.primary { background: #4c1d95; color: #fff; border-color: #8b5cf6; }
+
+.retro-btn.secondary { background: transparent; border-style: dashed; color: var(--text-muted); border-width: 2px; }
+body.dark-mode .retro-btn.secondary { border-color: #52525b; color: #a1a1aa; }
 
 .no-issues-retro {
-    text-align: center; font-family: var(--font-retro); font-size: 0.8rem;
-    padding: 10px; border: 1px solid var(--ink-green);
-    background: var(--paper-mint); color: var(--ink-green);
+    text-align: center; font-family: var(--font-retro); font-size: 0.8rem; font-weight: 700;
+    padding: 10px; border: 3px solid var(--pop-mint);
+    background: rgba(52, 211, 153, 0.1); color: var(--pop-mint); border-radius: 8px;
 }
+body.dark-mode .no-issues-retro { background: #064e3b; border-color: #34d399; color: #34d399; }
 
 /* =========================================
-   4. TONE (Retro Ruler)
+   4. TONE
    ========================================= */
 .tone-panel { padding: 1.2rem; }
 .tone-stamp {
-    font-family: var(--font-retro); font-size: 1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
+    font-family: var(--font-retro); font-size: 1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
     padding: 6px 14px;
-    border: 3px double; border-radius: 4px;
-    display: inline-block; margin-bottom: 16px; transform: rotate(-2deg);
-    background-color: rgba(255,255,255,0.5);
+    border: 3px solid; border-radius: 8px;
+    display: inline-block; margin-bottom: 16px;
+    background-color: rgba(0,0,0,0.05);
 }
+body.dark-mode .tone-stamp { background-color: rgba(255,255,255,0.1); border-color: #fff; color: #fff !important; }
+
 .spectrum-row { margin-bottom: 12px; }
 .spectrum-labels-retro {
     display: flex; justify-content: space-between;
-    font-family: var(--font-retro); font-size: 0.6rem; font-weight: 700;
-    color: #71717a; margin-bottom: 2px;
+    font-family: var(--font-retro); font-size: 0.65rem; font-weight: 700;
+    color: var(--text-muted); margin-bottom: 4px;
 }
 .spectrum-ruler {
-    width: 100%; height: 8px; position: relative;
-    border-bottom: 1px solid rgba(0,0,0,0.3);
-    background: repeating-linear-gradient(to right, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 1px, transparent 1px, transparent 10%);
+    width: 100%; height: 10px; position: relative;
+    border: 2px solid rgba(0,0,0,0.2); border-radius: 6px;
+    background: repeating-linear-gradient(to right, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 10%);
 }
-body.dark-mode .spectrum-ruler { border-color: rgba(255,255,255,0.3); background: repeating-linear-gradient(to right, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 1px, transparent 1px, transparent 10%); }
+body.dark-mode .spectrum-ruler { border-color: #52525b; background: repeating-linear-gradient(to right, rgba(255,255,255,0.1) 0px, rgba(255,255,255,0.1) 2px, transparent 2px, transparent 10%); }
+
 .spectrum-pin {
     width: 0; height: 0; 
-    border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid;
-    position: absolute; top: -2px; transform: translateX(-50%);
+    border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 10px solid;
+    position: absolute; top: -5px; transform: translateX(-50%);
     transition: left 0.5s ease;
 }
 
 /* =========================================
-   5. READABILITY (Mint Ledger Paper)
+   5. READABILITY
    ========================================= */
 .read-panel { padding: 1.2rem; }
 .readability-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 .ledger-box {
-    border: 1px solid #d1d5db; /* Light grey border */
-    padding: 8px; text-align: center;
-    background: var(--paper-mint); /* Mint tint background */
-    color: var(--ink-green); /* Dark Green Text */
+    border: 2px solid rgba(0,0,0,0.1);
+    padding: 10px; text-align: center;
+    background: rgba(0,0,0,0.02); 
+    border-radius: 8px;
 }
-body.dark-mode .ledger-box { background: #064e3b; border-color: #065f46; color: #a7f3d0; }
+body.dark-mode .ledger-box { border-color: #52525b; background: #27272a; }
 
 .ledger-label {
-    font-family: var(--font-retro); font-size: 0.6rem; text-transform: uppercase;
-    border-bottom: 1px solid rgba(0,0,0,0.1); margin-bottom: 4px; padding-bottom: 2px;
-    opacity: 0.8;
+    font-family: var(--font-retro); font-size: 0.6rem; text-transform: uppercase; font-weight: 700;
+    border-bottom: 2px solid rgba(0,0,0,0.1); margin-bottom: 6px; padding-bottom: 2px;
+    color: var(--text-muted);
 }
-.ledger-value { font-family: var(--font-retro); font-size: 1.4rem; font-weight: 700; }
+.ledger-value { font-family: var(--font-retro); font-size: 1.6rem; font-weight: 800; }
 
 /* =========================================
-   6. DICTIONARY (Blue Label Tape)
+   6. DICTIONARY
    ========================================= */
 .dict-panel { padding: 1.2rem; }
 
-/* Header Badge: Black Tape */
 .badge-retro {
-    background: var(--ink-black); color: #fff;
-    font-family: var(--font-retro); padding: 2px 6px; font-size: 0.7rem;
+    background: var(--ink-black); color: var(--panel-bg-solid);
+    font-family: var(--font-retro); padding: 2px 8px; font-size: 0.75rem; border-radius: 6px;
 }
 body.dark-mode .badge-retro { background: #fff; color: #000; }
 
 .dict-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 
-/* Words: Blue Label Tape */
 .label-chip {
-    background: #1e3a8a; /* Dark Blue Tape */
+    background: #1e3a8a; /* Blue Tape (Light Mode) */
     color: #fff;
     font-family: var(--font-retro); font-size: 0.75rem;
-    padding: 4px 8px;
+    padding: 4px 10px; border-radius: 6px;
     display: flex; align-items: center; gap: 6px;
-    box-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Lifted look */
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
 }
-body.dark-mode .label-chip { background: #3b82f6; }
-
-.label-chip button { color: #93c5fd; font-weight: 900; } /* Light blue X */
-.label-chip button:hover { color: #fff; }
+/* Dark Mode: Charcoal/Zinc look */
+body.dark-mode .label-chip { 
+    background: #3f3f46; 
+    border: 1px solid #71717a;
+    box-shadow: 2px 2px 0px #000; 
+}
+.label-chip button { color: #93c5fd; font-weight: 900; }
+body.dark-mode .label-chip button { color: #fff; }
 
 /* =========================================
    7. DASHBOARD LINK
    ========================================= */
 .dash-link {
   margin-top: auto; 
-  background: var(--ink-black) !important; color: #fff !important; 
+  background: var(--ink-black) !important; color: var(--panel-bg-solid) !important; 
   text-decoration: none; justify-content: center; align-items: center;
-  border: 2px solid var(--ink-black) !important;
+  border: 3px solid var(--ink-black) !important;
   cursor: pointer; padding: 1rem; font-family: var(--font-retro);
+  border-radius: 12px;
 }
-body.dark-mode .dash-link { background: #fff !important; color: #000 !important; }
+body.dark-mode .dash-link { background: #fff !important; color: #000 !important; border-color: #fff !important; }
+.dash-content { display: flex; align-items: center; gap: 10px; font-weight: 800; text-transform: uppercase; }
 
 /* =========================================
-   COLLAPSED FIXES
+   COLLAPSED FIXES & SMOOTH TRANSITION
    ========================================= */
-.sidebar.slim .panel { width: 50px; height: 50px; padding: 0; align-items: center; justify-content: center; }
+
+/* The Slim State */
+.sidebar.slim {
+    width: 90px; /* Collapsed Width */
+}
+
+/* 1. Shrink Panels Smoothly */
+.sidebar.slim .panel { 
+    width: 50px; height: 50px; 
+    padding: 0; 
+    align-items: center; justify-content: center;
+    border-radius: 14px;
+    margin: 0 auto;
+}
+
+/* 2. Hide Content immediately on collapse start */
 .sidebar.slim .sidebar-header, 
 .sidebar.slim .doc-list-wrapper, 
 .sidebar.slim .score-stamp-container,
@@ -276,19 +372,43 @@ body.dark-mode .dash-link { background: #fff !important; color: #000 !important;
 .sidebar.slim .dict-header,
 .sidebar.slim .dict-content,
 .sidebar.slim .dash-content,
-.sidebar.slim .fresh-sheet-btn, /* Hide the big button */
-.sidebar.slim h3 { display: none !important; }
+.sidebar.slim .fresh-sheet-btn, 
+.sidebar.slim h3 { 
+    display: none !important; 
+}
 
 .collapsed-icon { display: none; }
-.sidebar.slim .collapsed-icon { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; }
+/* 3. Fade in icons smoothly */
+.sidebar.slim .collapsed-icon { 
+    display: flex; width: 100%; height: 100%; 
+    align-items: center; justify-content: center;
+    animation: fadeIn 0.4s ease; 
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* Collapsed Tooltip */
+/* 4. Hover Invert Logic (Collapsed) */
+.sidebar.slim .panel:hover {
+    background-color: var(--ink-black);
+    border-color: var(--ink-black);
+    color: var(--panel-bg-solid);
+    box-shadow: none;
+}
+.sidebar.slim .panel:hover .collapsed-icon { color: var(--panel-bg-solid) !important; }
+
+body.dark-mode .sidebar.slim .panel:hover {
+    background-color: #fff;
+    border-color: #fff;
+    color: #000;
+}
+body.dark-mode .sidebar.slim .panel:hover .collapsed-icon { color: #000 !important; }
+
+/* 5. Tooltip */
 .sidebar.slim .panel:hover::after {
-    content: attr(data-tooltip);
+    content: attr(title);
     position: fixed; left: 85px; 
-    background: var(--ink-black); color: #fff;
+    background: var(--ink-black); color: var(--panel-bg-solid);
     padding: 6px 12px; font-family: var(--font-retro); font-size: 0.8rem;
-    z-index: 9999; pointer-events: none;
+    z-index: 9999; pointer-events: none; border-radius: 6px;
     box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
 }
 body.dark-mode .sidebar.slim .panel:hover::after { background: #fff; color: #000; }

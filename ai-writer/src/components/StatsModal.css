@@ -1,0 +1,240 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Architects+Daughter&display=swap');
+
+/* --- OVERLAY --- */
+.scrapbook-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(20, 20, 20, 0.85); /* Dark background to pop the paper */
+  backdrop-filter: blur(5px);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 2000;
+}
+
+/* --- THE PAGE (The Canvas) --- */
+.scrapbook-page {
+  position: relative;
+  width: 550px; max-width: 95%;
+  background-color: #f4f4f0;
+  /* Subtle crumpled paper texture */
+  background-image: repeating-linear-gradient(transparent, transparent 2px, #f4f4f0 2px, #f4f4f0 4px),
+                    radial-gradient(#e5e5e5 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px;
+  
+  /* The "Hand Drawn" Border Trick - Irregular Radius */
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 4px solid #18181b;
+  box-shadow: 15px 15px 0px rgba(0,0,0,0.4);
+  
+  padding: 30px;
+  animation: dropIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform: rotate(-1deg); /* Slight overall tilt */
+}
+
+@keyframes dropIn { 
+  from { transform: translateY(-50px) rotate(-5deg); opacity: 0; }
+  to { transform: translateY(0) rotate(-1deg); opacity: 1; }
+}
+
+/* --- DECORATIONS --- */
+.paper-clip {
+  position: absolute; top: -15px; left: 20px;
+  width: 15px; height: 45px;
+  border: 4px solid #9ca3af; border-radius: 10px;
+  z-index: 10;
+}
+.torn-tape {
+  position: absolute; top: -10px; right: 30%;
+  width: 80px; height: 30px;
+  background: rgba(255, 255, 255, 0.4);
+  transform: rotate(3deg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  backdrop-filter: blur(2px);
+}
+
+.comic-close {
+  position: absolute; top: 10px; right: 15px;
+  background: none; border: none;
+  font-family: 'Permanent Marker', cursive; font-size: 2rem;
+  color: #ef4444; cursor: pointer; z-index: 20;
+}
+.comic-close:hover { transform: scale(1.2) rotate(90deg); transition: 0.2s; }
+
+/* --- HEADER --- */
+.hand-drawn-box {
+  border: 3px solid #18181b;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 10px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 30px;
+  background: #fff;
+  transform: rotate(1deg);
+  box-shadow: 4px 4px 0 #18181b;
+}
+
+.comic-title {
+  font-family: 'Bangers', cursive; font-size: 2rem; margin: 0;
+  letter-spacing: 1px; color: #18181b;
+}
+.rank-tag {
+  background: #facc15; border: 2px solid #18181b;
+  font-family: 'Architects Daughter', cursive; font-weight: bold;
+  padding: 4px 10px; transform: rotate(-3deg);
+  font-size: 0.9rem;
+}
+
+/* --- LAYOUT --- */
+.scrapbook-body {
+  display: flex; gap: 20px; justify-content: center;
+  margin-bottom: 30px;
+}
+
+/* POLAROID STYLE (Consistency) */
+.polaroid-card {
+  background: #fff; padding: 10px 10px 30px 10px;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+  transform: rotate(-3deg);
+  position: relative; width: 45%;
+  text-align: center;
+}
+.polaroid-image-area {
+  background: #18181b; color: #fff;
+  padding: 20px 10px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.big-stat { font-family: 'Bangers', cursive; font-size: 3.5rem; line-height: 1; }
+.stat-label { font-family: 'Architects Daughter', cursive; font-size: 0.8rem; color: #9ca3af; }
+.polaroid-caption {
+  font-family: 'Architects Daughter', cursive; font-size: 0.9rem;
+  margin-top: 10px; color: #555;
+}
+.sticker-badge {
+  background: #ef4444; color: #fff; font-size: 0.6rem; padding: 2px 6px;
+  position: absolute; top: 5px; right: 5px; transform: rotate(10deg);
+  font-weight: bold; box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+}
+
+/* STICKY NOTE STYLE (Output) */
+.sticky-note {
+  background: #fef08a; /* Yellow sticky */
+  width: 45%; padding: 15px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+  transform: rotate(2deg);
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.pin {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #ef4444; box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  position: absolute; top: -5px; left: 50%;
+}
+.note-title {
+  font-family: 'Permanent Marker', cursive; font-size: 0.8rem; opacity: 0.7;
+}
+.hand-stat {
+  font-family: 'Permanent Marker', cursive; font-size: 2.5rem; color: #18181b;
+}
+.hand-unit {
+  font-family: 'Architects Daughter', cursive; font-size: 1rem;
+}
+.note-footer {
+  margin-top: 10px; font-size: 0.7rem; font-family: 'Architects Daughter', cursive;
+  border-top: 1px dashed #b45309; width: 100%; text-align: center; padding-top: 5px;
+}
+
+/* COMIC BURST (The Grades) */
+.comic-burst {
+  position: absolute; width: 50px; height: 50px;
+  background: #ef4444; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  /* The jagged shape */
+  clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
+  z-index: 10;
+}
+.burst-grade {
+  font-family: 'Bangers', cursive; font-size: 1.8rem;
+  transform: rotate(-5deg);
+}
+.grade-pos-1 { bottom: 40px; right: -15px; transform: rotate(15deg); }
+.grade-pos-2 { top: -10px; right: -10px; background: #3b82f6; transform: rotate(-10deg); }
+
+/* --- HISTOGRAM SKETCH --- */
+.sketch-area {
+  margin-bottom: 20px; padding: 10px;
+  border-bottom: 3px solid #18181b;
+  /* Create a slight curve to the line */
+  border-radius: 0 0 50% 50% / 0 0 10px 10px;
+}
+.sketch-label {
+  font-family: 'Architects Daughter', cursive; font-size: 0.8rem; font-weight: bold;
+}
+.sketch-bars {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  height: 60px; margin-top: 10px; gap: 5px;
+}
+.sketch-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
+.sketch-bar-track { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+
+.sketch-bar-fill {
+  width: 100%; border: 2px solid #18181b;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s;
+}
+.sketch-bar-fill.filled-black {
+  background: #18181b; /* Solid ink */
+}
+.sketch-bar-fill.filled-hatch {
+  background: #fff;
+  /* Diagonal hatch pattern */
+  background-image: linear-gradient(135deg, #18181b 25%, transparent 25%, transparent 50%, #18181b 50%, #18181b 75%, transparent 75%, transparent);
+  background-size: 4px 4px;
+}
+.sketch-day { font-family: 'Architects Daughter', cursive; font-size: 0.6rem; margin-top: 2px; }
+
+/* --- COMMENTS BUBBLE --- */
+.comments-bubble {
+  border: 2px solid #18181b;
+  border-radius: 30px; /* Round bubble */
+  padding: 10px 20px;
+  background: #fff;
+  position: relative;
+}
+/* Speech bubble tail */
+.comments-bubble::before {
+  content: ''; position: absolute; bottom: 100%; left: 20px;
+  border-width: 10px; border-style: solid;
+  border-color: transparent transparent #18181b transparent;
+}
+.comments-bubble p {
+  margin: 0; font-family: 'Architects Daughter', cursive; font-size: 0.9rem;
+}
+.highlight-word {
+  background: #fca5a5; padding: 0 4px; border-radius: 4px; margin: 0 2px;
+}
+
+/* --- DARK MODE (Chalkboard / Noir) --- */
+body.dark-mode .scrapbook-page {
+  background-color: #202020;
+  background-image: none; /* Remove crumpled paper */
+  border-color: #fff; box-shadow: 15px 15px 0 #000;
+  color: #fff;
+}
+body.dark-mode .hand-drawn-box { background: #333; border-color: #fff; box-shadow: 4px 4px 0 #fff; }
+body.dark-mode .comic-title { color: #fff; }
+
+body.dark-mode .polaroid-card { background: #333; color: #fff; }
+body.dark-mode .polaroid-image-area { background: #000; border: 1px solid #555; }
+body.dark-mode .polaroid-caption { color: #aaa; }
+
+body.dark-mode .sticky-note { background: #444; color: #fff; }
+body.dark-mode .hand-stat { color: #fff; }
+body.dark-mode .note-footer { border-color: #888; }
+
+body.dark-mode .sketch-bar-fill { border-color: #fff; }
+body.dark-mode .sketch-bar-fill.filled-black { background: #fff; }
+body.dark-mode .sketch-bar-fill.filled-hatch {
+  background-image: linear-gradient(135deg, #fff 25%, transparent 25%, transparent 50%, #fff 50%, #fff 75%, transparent 75%, transparent);
+}
+body.dark-mode .sketch-area { border-color: #fff; }
+
+body.dark-mode .comments-bubble { background: #333; border-color: #fff; }
+body.dark-mode .comments-bubble::before { border-color: transparent transparent #fff transparent; }
+body.dark-mode .highlight-word { background: #7f1d1d; color: #fff; }
